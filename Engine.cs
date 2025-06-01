@@ -16,6 +16,9 @@ public class Engine
     private readonly Dictionary<int, GameObject> _gameObjects = new();
     private readonly Dictionary<string, TileSet> _loadedTileSets = new();
     private readonly Dictionary<int, Tile> _tileIdMap = new();
+    private readonly List<EnemyObject> _enemies = new();
+    private DateTimeOffset _lastEnemySpawn = DateTimeOffset.Now;
+    private const double _enemySpawnInterval = 5000; // 5 secunde între spawn-uri
 
     private Level _currentLevel = new();
     private PlayerObject? _player;
@@ -102,6 +105,18 @@ public class Engine
         {
             _player.Attack();
         }
+
+        foreach (var enemy in _enemies)
+        {
+            enemy.Update(_player, msSinceLastFrame);
+        }
+
+        var timeSinceLastSpawn = (currentTime - _lastEnemySpawn).TotalMilliseconds;
+        if (timeSinceLastSpawn >= _enemySpawnInterval)
+        {
+            SpawnEnemy();
+            _lastEnemySpawn = currentTime;
+        }
         
         _scriptEngine.ExecuteAll(this);
 
@@ -156,8 +171,20 @@ public class Engine
                 var deltaY = Math.Abs(_player.Position.Y - tempGameObject.Position.Y);
                 if (deltaX < 32 && deltaY < 32)
                 {
-                    _player.TakeDamage(20); // Damage from bomb explosion
+                    _player.TakeDamage(20);
                 }
+            }
+        }
+
+        foreach (var enemy in _enemies)
+        {
+            try
+            {
+                enemy.Render(_renderer);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error rendering enemy: {ex.Message}");
             }
         }
 
@@ -222,5 +249,29 @@ public class Engine
 
         TemporaryGameObject bomb = new(spriteSheet, 2.1, (worldCoords.X, worldCoords.Y));
         _gameObjects.Add(bomb.Id, bomb);
+    }
+
+    private void SpawnEnemy()
+    {
+        if (_player == null) return;
+
+        var random = new Random();
+        var angle = random.NextDouble() * 2 * Math.PI;
+        var distance = 100;
+
+        var x = _player.Position.X + (int)(Math.Cos(angle) * distance);
+        var y = _player.Position.Y + (int)(Math.Sin(angle) * distance);
+
+        try
+        {
+            var spriteSheet = SpriteSheet.Load(_renderer, "Enemy.json", "Assets");
+            var enemy = new EnemyObject(spriteSheet, x, y);
+            _enemies.Add(enemy);
+            Console.WriteLine($"Enemy spawned at ({x}, {y})");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error spawning enemy: {ex.Message}");
+        }
     }
 }

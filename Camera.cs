@@ -58,6 +58,11 @@ public class Camera
         return rect.GetTranslated(new Vector2D<int>(Width / 2 - X, Height / 2 - Y));
     }
 
+    public Vector2D<int> ToScreenCoordinates(Vector2D<int> point)
+    {
+        return point + new Vector2D<int>(Width / 2 - X, Height / 2 - Y);
+    }
+
     public Vector2D<int> ToWorldCoordinates(Vector2D<int> point)
     {
         return point - new Vector2D<int>(Width / 2 - X, Height / 2 - Y);

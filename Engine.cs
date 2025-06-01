@@ -96,6 +96,8 @@ public class Engine
         bool addBomb = _input.IsKeyBPressed();
 
         _player.UpdatePosition(up, down, left, right, 48, 48, msSinceLastFrame);
+        _player.UpdateInvincibility();
+        
         if (isAttacking)
         {
             _player.Attack();
@@ -119,6 +121,10 @@ public class Engine
 
         RenderTerrain();
         RenderAllObjects();
+
+        // Render health bar in screen coordinates (not affected by camera)
+        var screenPos = _renderer.ToScreenCoordinates(playerPosition.X, playerPosition.Y);
+        _renderer.RenderHealthBar(_player.CurrentHealth, _player.MaxHealth, screenPos.X - 50, screenPos.Y - 40);
 
         _renderer.PresentFrame();
     }
@@ -144,12 +150,14 @@ public class Engine
                 continue;
             }
 
-            var tempGameObject = (TemporaryGameObject)gameObject!;
-            var deltaX = Math.Abs(_player.Position.X - tempGameObject.Position.X);
-            var deltaY = Math.Abs(_player.Position.Y - tempGameObject.Position.Y);
-            if (deltaX < 32 && deltaY < 32)
+            if (gameObject is TemporaryGameObject tempGameObject)
             {
-                _player.GameOver();
+                var deltaX = Math.Abs(_player.Position.X - tempGameObject.Position.X);
+                var deltaY = Math.Abs(_player.Position.Y - tempGameObject.Position.Y);
+                if (deltaX < 32 && deltaY < 32)
+                {
+                    _player.TakeDamage(20); // Damage from bomb explosion
+                }
             }
         }
 

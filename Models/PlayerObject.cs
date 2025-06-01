@@ -5,6 +5,15 @@ namespace TheAdventure.Models;
 public class PlayerObject : RenderableGameObject
 {
     private const int _speed = 128; // pixels per second
+    private const int _maxHealth = 100;
+    private int _currentHealth;
+    private bool _isInvincible;
+    private DateTimeOffset _lastDamageTime;
+    private const double _invincibilityDuration = 1000; // 1 second in milliseconds
+
+    public int CurrentHealth => _currentHealth;
+    public int MaxHealth => _maxHealth;
+    public bool IsDead => _currentHealth <= 0;
 
     public enum PlayerStateDirection
     {
@@ -28,7 +37,49 @@ public class PlayerObject : RenderableGameObject
 
     public PlayerObject(SpriteSheet spriteSheet, int x, int y) : base(spriteSheet, (x, y))
     {
+        _currentHealth = _maxHealth;
+        _isInvincible = false;
+        _lastDamageTime = DateTimeOffset.Now;
         SetState(PlayerState.Idle, PlayerStateDirection.Down);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (_isInvincible || State.State == PlayerState.GameOver)
+            return;
+
+        var timeSinceLastDamage = (DateTimeOffset.Now - _lastDamageTime).TotalMilliseconds;
+        if (timeSinceLastDamage < _invincibilityDuration)
+            return;
+
+        _currentHealth = Math.Max(0, _currentHealth - damage);
+        _isInvincible = true;
+        _lastDamageTime = DateTimeOffset.Now;
+
+        if (_currentHealth <= 0)
+        {
+            GameOver();
+        }
+    }
+
+    public void Heal(int amount)
+    {
+        if (State.State == PlayerState.GameOver)
+            return;
+
+        _currentHealth = Math.Min(_maxHealth, _currentHealth + amount);
+    }
+
+    public void UpdateInvincibility()
+    {
+        if (_isInvincible)
+        {
+            var timeSinceLastDamage = (DateTimeOffset.Now - _lastDamageTime).TotalMilliseconds;
+            if (timeSinceLastDamage >= _invincibilityDuration)
+            {
+                _isInvincible = false;
+            }
+        }
     }
 
     public void SetState(PlayerState state)

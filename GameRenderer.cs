@@ -96,6 +96,11 @@ public unsafe class GameRenderer
         return _camera.ToWorldCoordinates(new Vector2D<int>(x, y));
     }
 
+    public Vector2D<int> ToScreenCoordinates(int x, int y)
+    {
+        return _camera.ToScreenCoordinates(new Vector2D<int>(x, y));
+    }
+
     public void SetDrawColor(byte r, byte g, byte b, byte a)
     {
         _sdl.SetRenderDrawColor(_renderer, r, g, b, a);
@@ -109,5 +114,27 @@ public unsafe class GameRenderer
     public void PresentFrame()
     {
         _sdl.RenderPresent(_renderer);
+    }
+
+    public void RenderHealthBar(int currentHealth, int maxHealth, int x, int y)
+    {
+        const int barWidth = 100;
+        const int barHeight = 10;
+        const int padding = 2;
+
+        // Background (red)
+        _sdl.SetRenderDrawColor(_renderer, 255, 0, 0, 255);
+        var backgroundRect = new Rectangle<int>(x, y, barWidth, barHeight);
+        _sdl.RenderFillRect(_renderer, in backgroundRect);
+
+        // Health (green)
+        _sdl.SetRenderDrawColor(_renderer, 0, 255, 0, 255);
+        var healthWidth = (int)((float)currentHealth / maxHealth * (barWidth - padding * 2));
+        var healthRect = new Rectangle<int>(x + padding, y + padding, healthWidth, barHeight - padding * 2);
+        _sdl.RenderFillRect(_renderer, in healthRect);
+
+        // Border (white)
+        _sdl.SetRenderDrawColor(_renderer, 255, 255, 255, 255);
+        _sdl.RenderDrawRect(_renderer, in backgroundRect);
     }
 }

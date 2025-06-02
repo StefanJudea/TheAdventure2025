@@ -18,7 +18,7 @@ public class Engine
     private readonly Dictionary<int, Tile> _tileIdMap = new();
     private readonly List<EnemyObject> _enemies = new();
     private DateTimeOffset _lastEnemySpawn = DateTimeOffset.Now;
-    private const double _enemySpawnInterval = 5000; // 5 secunde între spawn-uri
+    private const double _enemySpawnInterval = 5000; 
 
     private Level _currentLevel = new();
     private PlayerObject? _player;

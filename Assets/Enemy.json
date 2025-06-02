@@ -1,0 +1,52 @@
+{
+    "rowCount": 1,
+    "columnCount": 8,
+    "frameWidth": 37,
+    "frameHeight": 37,
+    "frameCenter": {
+        "offsetX": 18,
+        "offsetY": 18
+    },
+    "fileName": "enemy.png",
+    "animations": {
+        "Idle": {
+            "startFrame": {
+                "row": 0,
+                "col": 0
+            },
+            "endFrame": {
+                "row": 0,
+                "col": 0
+            },
+            "durationMs": 100,
+            "loop": true,
+            "flip": 0
+        },
+        "Chase": {
+            "startFrame": {
+                "row": 0,
+                "col": 1
+            },
+            "endFrame": {
+                "row": 0,
+                "col": 4
+            },
+            "durationMs": 100,
+            "loop": true,
+            "flip": 0
+        },
+        "Attack": {
+            "startFrame": {
+                "row": 0,
+                "col": 5
+            },
+            "endFrame": {
+                "row": 0,
+                "col": 7
+            },
+            "durationMs": 100,
+            "loop": true,
+            "flip": 0
+        }
+    }
+} 

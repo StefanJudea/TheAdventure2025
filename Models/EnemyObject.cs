@@ -4,12 +4,12 @@ namespace TheAdventure.Models;
 
 public class EnemyObject : RenderableGameObject
 {
-    private const int _speed = 64; // pixels per second, mai lent decât player-ul
-    private const int _detectionRadius = 200; // raza în care inamicul detectează player-ul
-    private const int _attackRadius = 32; // raza în care inamicul poate ataca
-    private const int _damage = 10; // damage-ul făcut player-ului
+    private const int _speed = 64; 
+    private const int _detectionRadius = 200; 
+    private const int _attackRadius = 32; 
+    private const int _damage = 10; 
     private DateTimeOffset _lastAttackTime = DateTimeOffset.Now;
-    private const double _attackCooldown = 1000; // 1 secundă între atacuri
+    private const double _attackCooldown = 1000; 
 
     public enum EnemyState
     {
